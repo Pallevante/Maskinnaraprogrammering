@@ -27,7 +27,7 @@ loop:
 	beq 	$a2, 13, exit	# If a2 == 12
 	mul	$a0, $a1, $a2	# multiplies a2 with a1		(a0 == a1 * a2)
 	add	$a2, $a2, 1	# adds 1 to a2			(a2++)
-	li	$v0,1		# Time to print the shit
+	li	$v0, 1		# Time to print the shit
 	
 	syscall			# does what v0 says.
 	
@@ -39,7 +39,7 @@ loop:
 			
 	
 exit:
-	ori	$v0,$zero,10	# Prepare syscall to exit program cleanly
+	ori	$v0, $zero, 10	# Prepare syscall to exit program cleanly
 	syscall			# Bye!
 	
 
@@ -49,8 +49,8 @@ exit:
 	#	OLD CODE BELLOW
 	#
 	#	:::ADDITION:::
-	#	li 	$v0,1		#put 1 in v0 to print integer
-	#	add	$a0,$a1,$a2	#adds the addresses a1, a2 to a0	
+	#	li 	$v0, 1		#put 1 in v0 to print integer
+	#	add	$a0, $a1, $a2	#adds the addresses a1, a2 to a0	
 	#	syscall
 	#
 	#
@@ -58,8 +58,8 @@ exit:
 	#
 	#	:::HELLO WORLD:::
 	#
-	#	li	$v0,4		#put in 4 to v0 (print string)
-	#	la	$a0,hw		#adds the string to a0
+	#	li	$v0, 4		#put in 4 to v0 (print string)
+	#	la	$a0, hw		#adds the string to a0
 	#	syscall
 	#
 	#
