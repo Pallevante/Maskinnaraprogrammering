@@ -1,9 +1,16 @@
-# Work to be made.
+# Sorting Algorithm
+# Peter Håkansson
+# Simon Hedström 
+# 2014
 
 
 	.data
 datalen:
-	.word	0x0010	# 16
+	.word	0x0010		# 16
+	
+result: 
+	.asciiz	"The sorted list:"	
+
 data:
 	.word	0xffff7e81
 	.word	0x00000001
@@ -21,3 +28,25 @@ data:
 	.word	0x31093c54
 	.word	0x42102f37
 	.word	0x00ee655b
+
+	
+				
+main:
+	li	$t0, 	10
+	la	$s0, 	data 	# Add the data to adress s0.	
+	jal loop
+	
+loop:
+	
+	lw	$a0, 0($s0)
+	li	$v0, 1
+	syscall
+	
+	add	$s0, $s0, 4
+	j loop
+	nop
+
+
+exit:
+	ori	$v0, $zero, 10	# Prepare syscall to exit program cleanly
+	syscall			# Go and die!
