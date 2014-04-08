@@ -6,11 +6,9 @@
 
 	.data
 datalen:
-	.word	0x0010		# 16
-	
-result: 
-	.asciiz	"The sorted list:"	
+	.word	0x0010			# 16
 
+	
 data:
 	.word	0xffff7e81
 	.word	0x00000001
@@ -29,24 +27,33 @@ data:
 	.word	0x42102f37
 	.word	0x00ee655b
 
+result: 
+	.asciiz	"The sorted list:"
 	
+space: .asciiz "\n"	
+	
+.text					# fuck this fucking piece of fucking goddamn shit
 				
 main:
-	li	$t0, 	10
-	la	$s0, 	data 	# Add the data to adress s0.	
-	jal loop
-	
+	lw	$s1, datalen		# Add 16 to s1, data limit.
+	la	$s2, 0			# 0 to s2.
+	la	$s0, data 		# Add the data to adress s0.
+
 loop:
+	beq 	$s1, $s2, exit
 	
-	lw	$a0, 0($s0)
+	lw	$a0, 0($s0)	
 	li	$v0, 1
 	syscall
 	
-	add	$s0, $s0, 4
+	la 	$a0, space
+	li 	$v0, 4
+	syscall
+	
+	addi $s2, $s2, 1	
+	add $s0, $s0, 4
 	j loop
-	nop
-
 
 exit:
-	ori	$v0, $zero, 10	# Prepare syscall to exit program cleanly
-	syscall			# Go and die!
+	ori	$v0, $zero, 10		# Prepare syscall to exit program cleanly
+	syscall				# Go and die!
