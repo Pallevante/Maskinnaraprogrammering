@@ -36,7 +36,7 @@ loop:
 	syscall			# does what v0 says.
 	
 	j loop			# goto the loop	
-			
+	nop				# yolo
 	
 exit:
 	ori	$v0, $zero, 10	# Prepare syscall to exit program cleanly
