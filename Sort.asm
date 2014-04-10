@@ -44,12 +44,13 @@ main:
 	la	$s3, data			# Add the data to address s3.
 	li	$s4, 0
 	la	$s5, sorted_list		# Init the new list.
+
 	
+		# When I started this only me and god knew what I was thinking.
+		# Now only god knows....				
+						
 	
 sortLoop:
-
-	beq	$s4, 16, printLoop
-	nop
 	
 	bgt	$s3, $s0, moveCheckValue	# If greater then we don't need to check the next value
 	j sortLoop
@@ -82,7 +83,7 @@ addToSorted:
 
 
 
-printLoop:
+printLoop:					# God only knows what this does.
 	beq 	$s1, $s2, exit
 	
 	lw	$a0, 0($s5)	
