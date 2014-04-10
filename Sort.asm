@@ -27,32 +27,75 @@ data:
 	.word	0x42102f37
 	.word	0x00ee655b
 
+sorted_list:
+	
+
 result: 
 	.asciiz	"The sorted list:"
 	
-space: .asciiz "\n"	
+newline: .asciiz "\n"	
 	
-.text					# fuck this fucking piece of fucking goddamn shit
+.text						# fuck this fucking piece of fucking goddamn shit
 				
 main:
-	lw	$s1, datalen		# Add 16 to s1, data limit.
-	la	$s2, 0			# 0 to s2.
-	la	$s0, data 		# Add the data to adress s0.
+	lw	$s1, datalen			# Add 16 to s1, data limit.
+	la	$s2, 0				
+	la	$s0, data 			# Add the data to address s0.
+	la	$s3, data			# Add the data to address s3.
+	li	$s4, 0
+	la	$s5, sorted_list		# Init the new list.
+	
+	
+sortLoop:
 
-loop:
+	beq	$s4, 16, printLoop
+	nop
+	
+	bgt	$s3, $s0, moveCheckValue	# If greater then we don't need to check the next value
+	j sortLoop
+	nop
+	
+	
+	
+	blt	$s3, $s0, checkItterator	# if less than check Itterator	
+	addi	$s0, $s0, 4			# itterates 4 bytes.	
+	j sortLoop
+	nop
+
+
+moveCheckValue:
+	addi	$s3, $s3, 4			# New checkValue. 
+	j sortLoop
+	nop
+
+
+checkItterator:
+	beq	$s4, 16, addToSorted		# Checks if the iterator is done. If done add value to new list.
+	j sortLoop
+	nop
+	
+addToSorted:
+	move	$s5, $s3
+	j moveCheckValue
+	nop	
+
+
+
+
+printLoop:
 	beq 	$s1, $s2, exit
 	
-	lw	$a0, 0($s0)	
+	lw	$a0, 0($s5)	
 	li	$v0, 1
 	syscall
 	
-	la 	$a0, space
+	la 	$a0, newline
 	li 	$v0, 4
 	syscall
 	
-	addi $s2, $s2, 1	
-	add $s0, $s0, 4
-	j loop
+	addi $s2, $s2, 1		# Adds to the itterator 
+	addi $s0, $s0, 4		# Moves the offset 4 bytes.
+	j printLoop
 
 exit:
 	ori	$v0, $zero, 10		# Prepare syscall to exit program cleanly
