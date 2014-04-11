@@ -30,7 +30,7 @@ data:
 	.word	0x00ee655b
 
 sorted_list:
-	
+	.space 65536				# Allcolate a sorted list with the size of 16 * 4 bytes.
 
 result: 
 	.asciiz	"The sorted list:"
@@ -46,13 +46,16 @@ main:
 	la	$s3, data			# Add the data to address s3.
 	li	$s4, 0
 	la	$s5, sorted_list		# Init the new list.
-
+	la	$s6, 0				# Sorted words check
+	
 	
 		# When I started this only me and god knew what I was thinking.
 		# Now only god knows....				
 						
 	
 sortLoop:
+	beq	$s6, 16, printLoop		# If we have sorted all the words.
+	nop
 	
 	bgt	$s3, $s0, moveCheckValue	# If greater then we don't need to check the next value
 	j sortLoop
@@ -79,6 +82,7 @@ checkItterator:
 	
 addToSorted:
 	move	$s5, $s3
+	addi	$s6, $s6, 1			# Updates the ammount of sorted values
 	j moveCheckValue
 	nop	
 
