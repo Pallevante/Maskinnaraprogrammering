@@ -41,12 +41,14 @@ newline: .asciiz "\n"
 				
 main:
 	lw	$s1, datalen			# Add 16 to s1, data limit.
-	la	$s2, 0				
+	la	$s2, 0				# PrintLoop itterator
 	la	$s0, data 			# Add the data to address s0.
 	la	$s3, data			# Add the data to address s3.
-	li	$s4, 0
+	li	$s4, 0				# SortLoop itterator
 	la	$s5, sorted_list		# Init the new list.
 	la	$s6, 0				# Sorted words check
+	
+	
 	
 	
 		# When I started this only me and god knew what I was thinking.
@@ -54,18 +56,16 @@ main:
 						
 	
 sortLoop:
+	addi	$s0, $s0, 4			# itterates 4 bytes.
+	nop
+					
 	beq	$s6, 16, printLoop		# If we have sorted all the words.
 	nop
 	
 	bgt	$s3, $s0, moveCheckValue	# If greater then we don't need to check the next value
-	j sortLoop
-	nop
-	
-	
+	nop		
 	
 	blt	$s3, $s0, checkItterator	# if less than check Itterator	
-	addi	$s0, $s0, 4			# itterates 4 bytes.	
-	j sortLoop
 	nop
 
 
@@ -77,11 +77,16 @@ moveCheckValue:
 
 checkItterator:
 	beq	$s4, 16, addToSorted		# Checks if the iterator is done. If done add value to new list.
+	nop
 	j sortLoop
 	nop
 	
+	
+	
 addToSorted:
-	move	$s5, $s3
+	move	$s5, $s3			# Adds the value to a new array.
+	move	$s4, $zero			# Makes the itterator 0 again.
+	addi	$s5, $s5, 4			# Moves the sorted_list offset.
 	addi	$s6, $s6, 1			# Updates the ammount of sorted values
 	j moveCheckValue
 	nop	
@@ -103,6 +108,7 @@ printLoop:					# God only knows what this does.
 	addi $s2, $s2, 1		# Adds to the itterator 
 	addi $s0, $s0, 4		# Moves the offset 4 bytes.
 	j printLoop
+	
 
 exit:
 	ori	$v0, $zero, 10		# Prepare syscall to exit program cleanly
