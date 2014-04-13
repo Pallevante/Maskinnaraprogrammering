@@ -29,8 +29,6 @@ data:
 	.word	0x42102f37
 	.word	0x00ee655b
 
-sorted_list:
-	.space 65536				# Allcolate a sorted list with the size of 16 * 4 bytes.
 
 result: 
 	.asciiz	"The sorted list:"
@@ -45,8 +43,7 @@ main:
 	la	$s0, data 			# Add the data to address s0.
 	la	$s3, data			# Add the data to address s3.
 	li	$s4, 0				# SortLoop itterator
-	la	$s5, sorted_list		# Init the new list.
-	la	$s6, 0				# Sorted words check
+	la	$s6, 0				# Number of loops.
 	
 	
 	
@@ -56,10 +53,11 @@ main:
 						
 	
 sortLoop:
-	addi	$s0, $s0, 4			# itterates 4 bytes.
-	nop
 					
-	beq	$s6, 16, printLoop		# If we have sorted all the words.
+	beq	$s6, 16, printLoop		# If we have gone through 16 loops.
+	nop
+	
+	addi	$s0, $s0, 4			# Itterates 4 bytes.
 	nop
 	
 	bgt	$s3, $s0, moveCheckValue	# If greater then we don't need to check the next value
@@ -78,16 +76,20 @@ moveCheckValue:
 checkItterator:
 	beq	$s4, 16, addToSorted		# Checks if the iterator is done. If done add value to new list.
 	nop
-	j sortLoop
+	
+	j sortLoop				# Else back to the loop.
 	nop
 	
 	
 	
 addToSorted:
-	move	$s5, $s3			# Adds the value to a new array.
+	sw	$s5, 0($s3)			# Adds the value to a new array.
+	
 	move	$s4, $zero			# Makes the itterator 0 again.
-	addi	$s5, $s5, 4			# Moves the sorted_list offset.
-	addi	$s6, $s6, 1			# Updates the ammount of sorted values
+	
+	addi	$s5, $s5, 4			# Moves the sorted_list offset 4 bytes.
+	addi	$s6, $s6, 1			# Updates the ammount of sorted values.
+	
 	j moveCheckValue
 	nop	
 
@@ -97,7 +99,7 @@ addToSorted:
 printLoop:					# God only knows what this does.
 	beq 	$s1, $s2, exit
 	
-	lw	$a0, 0($s5)	
+	lw	$a0, 0($s3)	
 	li	$v0, 1
 	syscall
 	
