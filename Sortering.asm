@@ -40,11 +40,10 @@ newline: .asciiz "\n"
 main:
 	lw	$s1, datalen			# Add 16 to s1, data limit.
 	la	$s2, 0				# PrintLoop itterator
-	la	$s0, data 			# Add the data to address s0.
-	la	$s3, data			# Add the data to address s3.
-	li	$s4, 0				# SortLoop itterator
-	la	$s6, 0				# Number of loops.
-	
+	la	$s0, data 			# X array
+	la	$s3, data			# Y array.
+	li	$s4, 0				# Numb of Y-loops.
+	li	$s6, 0				# Numb of X-loops.
 	
 	
 	
@@ -52,54 +51,55 @@ main:
 		# Now only god knows....				
 						
 	
-sortLoop:
-					
-	beq	$s6, 16, printLoop		# If we have gone through 16 loops.
-	nop
-	
-	addi	$s0, $s0, 4			# Itterates 4 bytes.
-	nop
-	
-	bgt	$s3, $s0, moveCheckValue	# If greater then we don't need to check the next value
-	nop		
-	
-	blt	$s3, $s0, checkItterator	# if less than check Itterator	
+xLoop:					
+	bge	$s6, $s1, printLoop		# If we have gone through 16 loops.
 	nop
 
-
-moveCheckValue:
-	addi	$s3, $s3, 4			# New checkValue. 
-	j sortLoop
-	nop
-
-
-checkItterator:
-	beq	$s4, 16, addToSorted		# Checks if the iterator is done. If done add value to new list.
-	nop
+	lw	$a0, 0($s0)			# Adds x to address a0.	
+	lw 	$a1, 0($s0)			# Adds y to address a1.
+	jal yLoop
 	
-	j sortLoop				# Else back to the loop.
+		# Fucking shit stuff.
+yLoop:
+	jal moveY
+	
+	ble $a1, $a0, SortValues
 	nop
 	
+	beq $s4, $s1, moveX
+	nop 
 	
-	
-addToSorted:
+	j yLoop					
 
-		# Shit to be done here:
-		# Temp address
-		# Move the values to the new adress.
-		
-		
-	move	$s4, $zero			# Makes the itterator 0 again.	
+moveX:
+	addi	$s0, $s0, 4			# New x 
 	addi	$s6, $s6, 1			# Updates the ammount of sorted values.
+	addi	$s4, $zero, 0			# zeroes Y loop.
+	jr $ra
+	nop
+
+
+moveY:
+	addi	$s3, $s3, 4			# New y
+	jr $ra					# Else back to the loop.
+	nop
+
+					
 	
-	j moveCheckValue
+SortValues:
+		
+	lw	$t0, 0($s0)			# Loads the temp address.
+	lw	$s0, 0($s3)
+	lw	$s3, 0($t0)
+	
+	jr $ra
 	nop	
-
-
-
+	
+	# All below this point works.
 
 printLoop:					# God only knows what this does.
 	beq 	$s1, $s2, exit
+	nop
 	
 	lw	$a0, 0($s3)	
 	li	$v0, 1
@@ -112,6 +112,7 @@ printLoop:					# God only knows what this does.
 	addi $s2, $s2, 1		# Adds to the itterator 
 	addi $s0, $s0, 4		# Moves the offset 4 bytes.
 	j printLoop
+	nop
 	
 
 exit:
