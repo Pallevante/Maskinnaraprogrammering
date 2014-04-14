@@ -33,6 +33,8 @@ data:
 result: 
 	.asciiz	"The sorted list:"
 	
+dbgp:	.asciiz "Doing sort"
+	
 newline: .asciiz "\n"	
 	
 .text						# fuck this fucking piece of fucking goddamn shit
@@ -40,10 +42,13 @@ newline: .asciiz "\n"
 main:
 	lw	$s1, datalen			# Add 16 to s1, data limit.
 	la	$s2, 0				# PrintLoop itterator
-	la	$s0, data 			# X array
-	la	$s3, data			# Y array.
+	
+	la	$s0, data 			# X-Array
+	la	$s3, data 			# Y-Array
+	
 	li	$s4, 0				# Numb of Y-loops.
 	li	$s6, 0				# Numb of X-loops.
+	
 	
 	
 	
@@ -54,54 +59,72 @@ main:
 xLoop:					
 	bge	$s6, $s1, printLoop		# If we have gone through 16 loops.
 	nop
-
-	lw	$a0, 0($s0)			# Adds x to address a0.	
-	lw 	$a1, 0($s0)			# Adds y to address a1.
-	jal yLoop
 	
-		# Fucking shit stuff.
-yLoop:
-	jal moveY
-	
-	ble $a1, $a0, SortValues
+	lw	$a0, 0($s0)			# Adds x to address a0.		
 	nop
 	
-	beq $s4, $s1, moveX
+	jal 	yLoop
+	nop
+		# Fucking shit stuff.
+		
+		
+yLoop:
+	jal 	moveY
+	nop
+	
+	lw 	$a1, 0($s3)			# Adds y to address a1.
 	nop 
 	
-	j yLoop					
+	blt 	$a1, $a0, SortValues
+	nop
+	
+	beq 	$s4, $s1, moveX
+	nop 
+	
+	j 	yLoop	
+	nop
+									
 
 moveX:
 	addi	$s0, $s0, 4			# New x 
-	addi	$s6, $s6, 1			# Updates the ammount of sorted values.
-	addi	$s4, $zero, 0			# zeroes Y loop.
-	jr $ra
+	
+	addi	$s6, $s6, 1			# Uppdates the numb of X loops.
+	nop
+	addi	$s4, $s6, 0			# Y loop to X loop.
+	
+	j	xLoop
 	nop
 
 
 moveY:
 	addi	$s3, $s3, 4			# New y
-	jr $ra					# Else back to the loop.
+	addi	$s4, $s4, 1
+	jr 	$ra				# Back to the Future.
 	nop
 
-					
 	
-SortValues:
-		
-	lw	$t0, 0($s0)			# Loads the temp address.
-	lw	$s0, 0($s3)
-	lw	$s3, 0($t0)
+SortValues:		
+	add	$t0, $0, $a0			# Loads the temp address.
+	add	$a0, $0, $a1
+	add	$a1, $0, $t0		
 	
-	jr $ra
+	sw	$a0, 0($s3)
+	sw	$a1, 0($s0)
+	
+	jr 	$ra
 	nop	
 	
-	# All below this point works.
+	
+	# All below this point works. (maybe)
 
-printLoop:					# God only knows what this does.
+printLoop:
+	la	$s0, data
+	prntbdy:
+					# God only knows what this does.
 	beq 	$s1, $s2, exit
 	nop
 	
-	lw	$a0, 0($s3)	
+	lw	$a0, 0($s0)	
 	li	$v0, 1
 	syscall
 	
@@ -109,12 +132,20 @@ printLoop:					# God only knows what this does.
 	li 	$v0, 4
 	syscall
 	
-	addi $s2, $s2, 1		# Adds to the itterator 
-	addi $s0, $s0, 4		# Moves the offset 4 bytes.
-	j printLoop
+	addi 	$s2, $s2, 1		# Adds to the itterator 
+	addi 	$s0, $s0, 4		# Moves the offset 4 bytes.
+	j 	prntbdy
 	nop
 	
 
 exit:
 	ori	$v0, $zero, 10		# Prepare syscall to exit program cleanly
 	syscall				# Go and die!
+
+
+	# A long long time ago far far away
+	# a programmer student a sat in his chair.
+	# Moaning and trying not to sway.
+	# Writing good which is good and fair.
+	# But all god has an end.
+	# He went on a rampage to kill his best friend.
