@@ -83,11 +83,13 @@ checkItterator:
 	
 	
 addToSorted:
-	sw	$s5, 0($s3)			# Adds the value to a new array.
-	
-	move	$s4, $zero			# Makes the itterator 0 again.
-	
-	addi	$s5, $s5, 4			# Moves the sorted_list offset 4 bytes.
+
+		# Shit to be done here:
+		# Temp address
+		# Move the values to the new adress.
+		
+		
+	move	$s4, $zero			# Makes the itterator 0 again.	
 	addi	$s6, $s6, 1			# Updates the ammount of sorted values.
 	
 	j moveCheckValue
