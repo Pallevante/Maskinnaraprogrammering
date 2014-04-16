@@ -63,9 +63,9 @@ xLoop:
 	
 	lw	$a0, 0($s0)		# Adds x to address a0.		
 	nop
-	
 	jal 	yLoop
 	nop
+
 	
 	# Fucking shit stuff.
 			
@@ -105,8 +105,8 @@ moveY:
 
 	
 SortValues:		
-	move	$a0, $t0		# Loads the temp address.
-	move	$a1, $a0		# Switches the values.		
+	add	$t0, $0, $a0		# Loads the temp address.
+	add	$a0, $0, $a1		# Switches the values.		
 	
 	sw	$a0, 0($s0)		# Adds the new X-Value to the X-Array
 	sw	$t0, 0($s3)		# Adds the new Y-Value to the Y-Array
