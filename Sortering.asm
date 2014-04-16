@@ -66,9 +66,9 @@ xLoop:
 	
 	jal 	yLoop
 	nop
+	
 	# Fucking shit stuff.
-		
-		
+			
 yLoop:
 	jal 	moveY
 	nop
@@ -79,7 +79,7 @@ yLoop:
 	blt 	$a1, $a0, SortValues
 	nop
 	
-	beq 	$s4, $s1, moveX
+	bge 	$s4, 16, moveX		# Culprit...maybe
 	nop 
 	
 	j 	yLoop	
@@ -87,11 +87,11 @@ yLoop:
 									
 
 moveX:
-	addi	$s0, $s0, 4		# New x 
-	
+	addi	$s0, $s0, 4		# New x 	
 	addi	$s6, $s6, 1		# Uppdates the numb of X loops.
 	nop
-	addi	$s4, $s6, 0		# Y loop to X loop.
+	
+	move	$s6, $s4		# Y loop to X loop.
 	
 	j	xLoop
 	nop
@@ -105,14 +105,12 @@ moveY:
 
 	
 SortValues:		
-	add	$t0, $0, $a0		# Loads the temp address.
-	add	$a0, $0, $a1
-	add	$a1, $0, $t0		
+	move	$a0, $t0		# Loads the temp address.
+	move	$a1, $a0		# Switches the values.		
 	
-	sw	$a1, 0($s0)		# Adds the new X-Value to the X-Array
-	sw	$a0, 0($s3)		# Adds the new Y-Value to the Y-Array
-	
-	
+	sw	$a0, 0($s0)		# Adds the new X-Value to the X-Array
+	sw	$t0, 0($s3)		# Adds the new Y-Value to the Y-Array
+		
 	jr 	$ra
 	nop	
 	
@@ -120,6 +118,7 @@ SortValues:
 	# All below this point works. (maybe)
 
 printLoop:
+
 	la	$s0, data
 	prntbdy:
 					# God only knows what this does.
