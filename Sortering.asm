@@ -28,10 +28,13 @@ data:
 	.word	0x31093c54
 	.word	0x42102f37
 	.word	0x00ee655b
-
+data1:
+	.word	16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1
+	
+	
 
 result: 
-	.asciiz	"The sorted list:"
+	.asciiz	"The sorted list:\n"
 	
 dbgp:	.asciiz "Doing sort"
 	
@@ -43,86 +46,75 @@ main:
 	lw	$s3, datalen		# Add 16 to s1, data limit.
 	la	$s5, 0			# PrintLoop itterator
 	
-	la	$s0, data 		# loopArray
-	la	$s1, data		# SortPosition-Array
+	la	$s0, data1 		# loopArray
+	la	$s1, data1		# SortPosition-Array
+	la	$t7, data1		# Lowest value position.
 
 	li	$s4, 0			# Numb of Y-loops.
 	li	$s2, 0			# iMin.
 	li	$s6, 0			# Numb of X-loops.
-	
-	
-	# This will use the basic of X and Y.
-	# Y will always be X + 1 until it's out of bounds.
-	
-	
-	# When I started this only me and god knew what I was thinking.
-	# Now only god knows....				
-						
-	
-xLoop:					
-	bge	$s6, 16, printLoop	# If we have gone through 16 loops.
-	nop
-	
-	lw	$a0, 0($s1)		# Adds x to address a0.		
-	nop
-	add	$s2, $0, $a0		# Assume it's the smallest.
-	jal 	yLoop
-	nop
 
+
+		
+xLoop:	
+	# If we have gone through 16 loops.				
+	bge	$s6, $s3, printLoop	
+	nop
 	
+	# Adds x to address s2.	
+	lw	$s2, 0($s1)			
+
+		
 	# Fucking shit stuff.
 			
-yLoop:
-	jal 	moveY
-	nop
+	yLoop:
+		# New y
+		addi	$s0, $s0, 4	
+		addi	$s4, $s4, 1
+		# Culprit...maybe
+		bge 	$s4, $s3, SortValues		
+		nop 
+		
+		# Adds y to address a1.
+		lw 	$s7, 0($s0)		
+		nop 
 	
-	lw 	$a1, 0($s0)		# Adds y to address a1.
-	nop 
-	
-	blt 	$a1, $s2, SwitchValues
-	nop
-	
-	bge 	$s4, 16, moveX		# Culprit...maybe
-	nop 
-	
-	j 	yLoop	
-	nop
+		ble 	$s7, $s2, SwitchValues
+		nop			
+		
+		j 	yLoop	
+		nop
+		
 									
 
 moveX:
-	addi	$s0, $s0, 4		# New startPosition for loop
-	addi	$s6, $s6, 1		# Uppdates the numb of X loops.
-	add	$s1, $0, $s0		# New startPosition for sortLoop.
+	addi	$s1, $s1, 4		# New startPosition for sortLoop.
 	nop
+	addi	$s6, $s6, 1		# Uppdates the numb of X loops.
+	add	$s0, $0, $s1		# New startPosition for loop based on startPosition for sortloop
 	
-	move	$s6, $s4		# Y loop to X loop.
+	
+	add	$s4, $s6, $0		# Y loop to X loop.
 	
 	j	xLoop
-	nop
-
-
-moveY:
-	addi	$s0, $s0, 4		# New y
-	addi	$s4, $s4, 1
-	jr 	$ra			# Back to the Future.
 	nop
 
 	
 SortValues:		
-	lw	$t1, 0($s1)		# Loads the word to be replaced in sortedArray
+	lw	$t0, 0($s1)		
+	nop
+	sw	$t0, 0($t7)		# Adds the replaced value to looparray.
+	sw	$s2, 0($s1)		# Adds the new min to the sorted array
 	
-	add	$t0, $0, $s2		# Loads the temp address.
-	add	$s2, $0, $t1		# Switches the values.		
 	
-	sw	$a1, 0($s0)		# Adds the replaced value to looparray.
-	sw	$t0, 0($s1)		# Adds the new min to the sorted array
 		
-	j	xLoop
+	j	moveX
 	nop	
 
 SwitchValues:
-	add	$s2, $0, $a1		# Changes the iMin value.
-	beq	$s4, $s3, SortValues
+	add	$s2, $0, $s7		# Changes the iMin value.
+	add	$t7, $0, $s0
+	bge	$s4, $s3, SortValues
 	nop	
 	j	yLoop
 	nop
@@ -132,7 +124,11 @@ SwitchValues:
 
 printLoop:
 
-	la	$s1, data
+	la	$s1, data1		
+	la	$a0, result
+	li	$v0, 4
+	syscall
+	
 	prntbdy:
 					# God only knows what this does.
 	bge 	$s5, $s3, exit
