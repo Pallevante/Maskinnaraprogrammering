@@ -46,9 +46,9 @@ main:
 	lw	$s3, datalen		# Add 16 to s1, data limit.
 	la	$s5, 0			# PrintLoop itterator
 	
-	la	$s0, data1 		# loopArray
-	la	$s1, data1		# SortPosition-Array
-	la	$t7, data1		# Lowest value position.
+	la	$s0, data 		# loopArray
+	la	$s1, data		# SortPosition-Array
+	la	$t7, data		# Lowest value position.
 
 	li	$s4, 0			# Numb of Y-loops.
 	li	$s2, 0			# iMin.
@@ -103,10 +103,16 @@ moveX:
 SortValues:		
 	lw	$t0, 0($s1)		
 	nop
+	
+	
+	# Detta här var orsaken till att 9 blev 16.
+	beq	$s2, $t0, moveX
+	nop
+	
+	
+	
 	sw	$t0, 0($t7)		# Adds the replaced value to looparray.
 	sw	$s2, 0($s1)		# Adds the new min to the sorted array
-	
-	
 		
 	j	moveX
 	nop	
@@ -124,7 +130,7 @@ SwitchValues:
 
 printLoop:
 
-	la	$s1, data1		
+	la	$s1, data	
 	la	$a0, result
 	li	$v0, 4
 	syscall
