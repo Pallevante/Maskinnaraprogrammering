@@ -36,6 +36,7 @@ data1:
 result: 
 	.asciiz	"The sorted list:\n"
 	
+dbgp:	.asciiz "Doing sort"
 	
 newline: .asciiz "\n"	
 
@@ -45,37 +46,52 @@ buffer : .space 64
 .text					
 				
 main:
-	#Open a file to read
-	li	$v0, 13				#Call to open a file
-	la	$a0, directory		#Reads file random.asm
-	li	$a1, 0 				#Open for reading
-	li	$a2, 0
-	syscall
-	move $s6, $v0      		# save the file descriptor
 	
-	#Time to read the file
-	li	$v0, 14				#Call to read a file
-	move	$a0 , $s6		#File descriptor
-	la	$a1, buffer			#Make space
-	syscall					#Read the file
-	
-	
-	
-	
-	
-	
-	lw	$s3, datalen		# Add 16 to s1, data limit.
+	#lw	$s3, datalen		# Add 16 to s1, data limit.
 	la	$s5, 0			# PrintLoop itterator
 	
-	la	$s0, data 		# loopArray
-	la	$s1, data		# SortPosition-Array
-	la	$t7, data		# Lowest value position.
+	#la	$s0, data 		# loopArray
+	#la	$s1, data		# SortPosition-Array
+	#la	$t7, data		# Lowest value position.
 
 	li	$s4, 0			# Numb of Y-loops.
 	li	$s2, 0			# iMin.
 	li	$s6, 0			# Numb of X-loops.
+	
+	#Open a file to read
+	li	$v0, 13			#Call to open a file
+	la	$a0, directory		#Reads file random.asm
+	li	$a1, 0 			#Open for reading
+	li	$a2, 0			#Might not be needed
+	syscall
+	move	$t1, $v0      		# save the file descriptor
+	
+	#Time to read the file
+	la	$a1, buffer		#Make space
+	jal	readLoop
 
 
+readLoop:
+	
+	li	$t3, 0			#16 loops when reading file
+	addi	$t3, $t3, 1
+	addi	$t1, $t1, 4
+	
+	#If we have gone 16 loops (might change) we want to close the file 
+	bge	$t3, 16, closeFile
+	nop
+	
+	li	$v0, 14			#Call to read a file
+	move	$a0 , $s6		#File descriptor
+	syscall
+	
+	sw	$s0, 0($t1)
+	j	readLoop
+	
+closeFile:
+	li	$v0 , 16		#Call to close a file
+	move	$a0, $t1		#File descriptor to close
+	syscall
 		
 xLoop:	
 	# If we have gone through 16 loops.				
@@ -84,12 +100,14 @@ xLoop:
 	
 	# Adds x to address s2.	
 	lw	$s2, 0($s1)			
+
+		
 			
 	yLoop:
 		# New y
 		addi	$s0, $s0, 4	
 		addi	$s4, $s4, 1
-		# Culprit...maybe
+		
 		bge 	$s4, $s3, SortValues		
 		nop 
 		
@@ -108,7 +126,7 @@ xLoop:
 moveX:
 	addi	$s1, $s1, 4		# New startPosition for sortLoop.
 	nop
-	addi	$s6, $s6, 1		# Uppdates the xLoop count
+	addi	$s6, $s6, 1		# Updates the xLoop count
 	add	$s0, $0, $s1		# New startPosition for loop based on startPosition for sortloop
 	
 	
@@ -121,13 +139,14 @@ moveX:
 SortValues:		
 	lw	$t0, 0($s1)		
 	nop
-		
+	
+	
 	# If lowest number is the same as the number on position to be sorted
 	beq	$s2, $t0, moveX
-	nop	
+	nop
 	
-	sw	$t0, 0($t7)			# Adds the replaced value to looparray.
-	sw	$s2, 0($s1)			# Adds the new min to the sorted array
+	sw	$t0, 0($t7)		# Adds the replaced value to looparray.
+	sw	$s2, 0($s1)		# Adds the new min to the sorted array
 		
 	j	moveX
 	nop	
@@ -139,13 +158,19 @@ SwitchValues:
 	nop	
 	j	yLoop
 	nop
-
+		
+	
 
 printLoop:
+
 	la	$s1, data	
-	prntbdy:
+	la	$a0, result
+	li	$v0, 4
+	syscall
 	
-	# Prints all the values in the sorted list.				
+	prntbdy:
+		
+	# Prints all the values in the sorted list.					
 	bge 	$s5, $s3, exit
 	nop
 	
@@ -165,5 +190,4 @@ printLoop:
 
 exit:
 	ori	$v0, $zero, 10		# Prepare syscall to exit program cleanly
-	syscall					# Exit
-
+	syscall				# Exit
