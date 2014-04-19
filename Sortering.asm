@@ -28,13 +28,42 @@ data:
 	.word	0x31093c54
 	.word	0x42102f37
 	.word	0x00ee655b
+data1:
+	.word	1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+	
+	
+
+result: 
+	.asciiz	"The sorted list:\n"
 	
 	
 newline: .asciiz "\n"	
+
+directory: .asciiz "random.asm"
+buffer : .space 64
 	
 .text					
 				
 main:
+	#Open a file to read
+	li	$v0, 13				#Call to open a file
+	la	$a0, directory		#Reads file random.asm
+	li	$a1, 0 				#Open for reading
+	li	$a2, 0
+	syscall
+	move $s6, $v0      		# save the file descriptor
+	
+	#Time to read the file
+	li	$v0, 14				#Call to read a file
+	move	$a0 , $s6		#File descriptor
+	la	$a1, buffer			#Make space
+	syscall					#Read the file
+	
+	
+	
+	
+	
+	
 	lw	$s3, datalen		# Add 16 to s1, data limit.
 	la	$s5, 0			# PrintLoop itterator
 	
@@ -97,8 +126,8 @@ SortValues:
 	beq	$s2, $t0, moveX
 	nop	
 	
-	sw	$t0, 0($t7)		# Adds the replaced value to looparray.
-	sw	$s2, 0($s1)		# Adds the new min to the sorted array
+	sw	$t0, 0($t7)			# Adds the replaced value to looparray.
+	sw	$s2, 0($s1)			# Adds the new min to the sorted array
 		
 	j	moveX
 	nop	
@@ -110,9 +139,7 @@ SwitchValues:
 	nop	
 	j	yLoop
 	nop
-		
-	
-	
+
 
 printLoop:
 	la	$s1, data	
@@ -138,5 +165,5 @@ printLoop:
 
 exit:
 	ori	$v0, $zero, 10		# Prepare syscall to exit program cleanly
-	syscall				# Exit
+	syscall					# Exit
 
