@@ -28,19 +28,11 @@ data:
 	.word	0x31093c54
 	.word	0x42102f37
 	.word	0x00ee655b
-data1:
-	.word	16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1
 	
-	
-
-result: 
-	.asciiz	"The sorted list:\n"
-	
-dbgp:	.asciiz "Doing sort"
 	
 newline: .asciiz "\n"	
 	
-.text					# fuck this fucking piece of fucking goddamn shit
+.text					
 				
 main:
 	lw	$s3, datalen		# Add 16 to s1, data limit.
@@ -63,9 +55,6 @@ xLoop:
 	
 	# Adds x to address s2.	
 	lw	$s2, 0($s1)			
-
-		
-	# Fucking shit stuff.
 			
 	yLoop:
 		# New y
@@ -90,11 +79,11 @@ xLoop:
 moveX:
 	addi	$s1, $s1, 4		# New startPosition for sortLoop.
 	nop
-	addi	$s6, $s6, 1		# Uppdates the numb of X loops.
+	addi	$s6, $s6, 1		# Uppdates the xLoop count
 	add	$s0, $0, $s1		# New startPosition for loop based on startPosition for sortloop
 	
 	
-	add	$s4, $s6, $0		# Y loop to X loop.
+	add	$s4, $s6, $0		# Set Y loop to X loop.
 	
 	j	xLoop
 	nop
@@ -103,13 +92,10 @@ moveX:
 SortValues:		
 	lw	$t0, 0($s1)		
 	nop
-	
-	
-	# Detta här var orsaken till att 9 blev 16.
+		
+	# If lowest number is the same as the number on position to be sorted
 	beq	$s2, $t0, moveX
-	nop
-	
-	
+	nop	
 	
 	sw	$t0, 0($t7)		# Adds the replaced value to looparray.
 	sw	$s2, 0($s1)		# Adds the new min to the sorted array
@@ -126,17 +112,13 @@ SwitchValues:
 	nop
 		
 	
-	# All below this point works. (maybe)
+	
 
 printLoop:
-
 	la	$s1, data	
-	la	$a0, result
-	li	$v0, 4
-	syscall
-	
 	prntbdy:
-					# God only knows what this does.
+	
+	# Prints all the values in the sorted list.				
 	bge 	$s5, $s3, exit
 	nop
 	
@@ -156,12 +138,5 @@ printLoop:
 
 exit:
 	ori	$v0, $zero, 10		# Prepare syscall to exit program cleanly
-	syscall				# Go and die!
+	syscall				# Exit
 
-
-	# A long long time ago far far away
-	# a programmer student a sat in his chair.
-	# Moaning and trying not to sway.
-	# Writing good which is good and fair.
-	# But all god has an end.
-	# He went on a rampage to kill his best friend.
