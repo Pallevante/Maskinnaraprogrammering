@@ -38,10 +38,11 @@ result:
 	
 dbgp:	.asciiz "Doing sort"
 	
-newline: .asciiz "\n"	
+newline: .asciiz "\n"
 inputInstruction: .asciiz "Enter the file you want to sort (it has to be in the same dir as this file.):"
-directory: .asciiz "random.asm"
-buffer : .space 64
+buffer : .space 1024
+
+
 	
 .text					
 				
@@ -59,15 +60,6 @@ main:
 	syscall
 	
 	# Dunno....
-	
-	li	$v0, 13				#Call to open a file
-	la	$a0, directory			#Reads file random.asm
-	li	$a1, 0 				#Open for reading
-	li	$a2, 0
-	syscall
-	
-	move $s0, $v0      			# save the file descriptor
-		
 		
 	lw	$s3, datalen		# Add 16 to s1, data limit.
 	la	$s5, 0			# PrintLoop itterator
@@ -79,36 +71,34 @@ main:
 	li	$s4, 0			# Numb of Y-loops.
 	li	$s2, 0			# iMin.
 	li	$s6, 0			# Numb of X-loops.
-
-	syscall
-	move	$t1, $v0   	   		# save the file descriptor
+	li	$t3, 0			#Loop for reading from a file
 	
-	#Time to read the file
 	
 	jal	readLoop
 
 
 readLoop:
 	
-	#addi	$t3, $t3, 1
-	#addi	$t1, $t1, 4
 	
-	#If we have gone 16 loops (might change) we want to close the file 
-	#bge	$t3, 16, closeFile
-	#nop
-	
-	li	$v0, 14			#Call to read a file
-	move	$a0 , $s6		#File descriptor
+	#Open a file to read
+	li	$v0, 13			#Call to open a file
+	la	$a0, ($t4)		#Reads the user input file
+	li	$a1, 0 			#Open for reading
+	li	$a2, 0			#Might not be needed
 	syscall
-	la	$s0, buffer		#Make space
-	#sw	$s0, 0($t1)
-	#j	readLoop
+	move	$t1, $v0   	   	# save the file descriptor
 	
-closeFile:
+	#Time to read the file
+	li	$v0, 14			#Call to read a file
+	move	$a0 , $t1		#File descriptor
+	la	$a1, buffer		#A1 gets the adress of the buffer
+	li	$a2, 1024		#Hardcoded buffersize
+	syscall
+	
+	#Time to close it
 	li	$v0 , 16		#Call to close a file
 	move	$a0, $t1		#File descriptor to close
 	syscall
-
 		
 xLoop:	
 	# If we have gone through 16 loops.				
@@ -179,16 +169,11 @@ SwitchValues:
 	
 
 printLoop:
-<<<<<<< HEAD
-	la	$s1, ($s0)	
-	prntbdy:
-=======
 
 	la	$s1, data	
 	la	$a0, result
 	li	$v0, 4
 	syscall
->>>>>>> 6cc9d6c33bce425e596b944873a213a4536de541
 	
 	prntbdy:
 		
