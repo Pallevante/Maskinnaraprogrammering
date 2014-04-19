@@ -38,38 +38,48 @@ result:
 	
 	
 newline: .asciiz "\n"	
-
+inputInstruction: .asciiz "Enter the file you want to sort (it has to be in the same dir as this file.):"
 directory: .asciiz "random.asm"
 buffer : .space 64
 	
 .text					
 				
 main:
-	#Open a file to read
+	# Print instructions
+	la	$a0, inputInstruction
+	li	$v0, 4
+	syscall
+
+	# Read filename
+	li	$v0, 8
+	la	$a0, buffer
+	li	$a1, 20
+	syscall
+	
+	# Dunno....
+	
 	li	$v0, 13				#Call to open a file
-	la	$a0, directory		#Reads file random.asm
+	la	$a0, directory			#Reads file random.asm
 	li	$a1, 0 				#Open for reading
 	li	$a2, 0
 	syscall
-	move $s6, $v0      		# save the file descriptor
+	
+	move $s0, $v0      			# save the file descriptor
 	
 	#Time to read the file
 	li	$v0, 14				#Call to read a file
-	move	$a0 , $s6		#File descriptor
+	move	$a0 , $s6			#File descriptor
 	la	$a1, buffer			#Make space
 	syscall					#Read the file
-	
-	
-	
 	
 	
 	
 	lw	$s3, datalen		# Add 16 to s1, data limit.
 	la	$s5, 0			# PrintLoop itterator
 	
-	la	$s0, data 		# loopArray
-	la	$s1, data		# SortPosition-Array
-	la	$t7, data		# Lowest value position.
+	
+	add	$s1, $0, $s0		# SortPosition-Array
+	add	$t7, $0, $s0		# Lowest value position.
 
 	li	$s4, 0			# Numb of Y-loops.
 	li	$s2, 0			# iMin.
@@ -142,7 +152,7 @@ SwitchValues:
 
 
 printLoop:
-	la	$s1, data	
+	la	$s1, ($s0)	
 	prntbdy:
 	
 	# Prints all the values in the sorted list.				
