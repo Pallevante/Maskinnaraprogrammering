@@ -57,6 +57,7 @@ main:
 	li	$s4, 0			# Numb of Y-loops.
 	li	$s2, 0			# iMin.
 	li	$s6, 0			# Numb of X-loops.
+	li	$t3, 0			#Loop for reading from a file
 	
 	#Open a file to read
 	li	$v0, 13			#Call to open a file
@@ -64,29 +65,28 @@ main:
 	li	$a1, 0 			#Open for reading
 	li	$a2, 0			#Might not be needed
 	syscall
-	move	$t1, $v0      		# save the file descriptor
+	move	$t1, $v0   	   		# save the file descriptor
 	
 	#Time to read the file
-	la	$a1, buffer		#Make space
+	
 	jal	readLoop
 
 
 readLoop:
 	
-	li	$t3, 0			#16 loops when reading file
-	addi	$t3, $t3, 1
-	addi	$t1, $t1, 4
+	#addi	$t3, $t3, 1
+	#addi	$t1, $t1, 4
 	
 	#If we have gone 16 loops (might change) we want to close the file 
-	bge	$t3, 16, closeFile
-	nop
+	#bge	$t3, 16, closeFile
+	#nop
 	
 	li	$v0, 14			#Call to read a file
 	move	$a0 , $s6		#File descriptor
 	syscall
-	
-	sw	$s0, 0($t1)
-	j	readLoop
+	la	$s0, buffer		#Make space
+	#sw	$s0, 0($t1)
+	#j	readLoop
 	
 closeFile:
 	li	$v0 , 16		#Call to close a file
