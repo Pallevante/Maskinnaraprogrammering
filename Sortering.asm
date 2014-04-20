@@ -7,31 +7,34 @@
 
 
 	.data
+directory: .asciiz "random.asm"
+	
+	
 datalen:
-	.word	0x0010			# 16
+	#.word	0x0010			# 16
 
 	
 data:
-	.word	0xffff7e81
-	.word	0x00000001
-	.word	0x00000002
-	.word	0xffff0001
-	.word	0x00000000
-	.word	0x00000001
-	.word	0xffffffff
-	.word	0x00000000
-	.word	0xe3456687
-	.word	0xa001aa88
-	.word	0xf0e159ea
-	.word	0x9152137b
-	.word	0xaab385a1
-	.word	0x31093c54
-	.word	0x42102f37
-	.word	0x00ee655b
+	#.word	0xffff7e81
+	#.word	0x00000001
+	#.word	0x00000002
+	#.word	0xffff0001
+	#.word	0x00000000
+	#.word	0x00000001
+	#.word	0xffffffff
+	#.word	0x00000000
+	#.word	0xe3456687
+	#.word	0xa001aa88
+	#.word	0xf0e159ea
+	#.word	0x9152137b
+	#.word	0xaab385a1
+	#.word	0x31093c54
+	#.word	0x42102f37
+	#.word	0x00ee655b
 data1:
-	.word	1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+	#.word	1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
 	
-	
+
 
 result: 
 	.asciiz	"The sorted list:\n"
@@ -40,7 +43,7 @@ dbgp:	.asciiz "Doing sort"
 	
 newline: .asciiz "\n"
 inputInstruction: .asciiz "Enter the file you want to sort (it has to be in the same dir as this file.):"
-buffer : .space 1024
+buffer : .space 68
 
 
 	
@@ -58,31 +61,32 @@ main:
 	la	$a0, buffer
 	li	$a1, 20
 	syscall
+	move	$s0, $a0
 	
-	# Dunno....
+	jal readLoop
+	nop
 		
-	lw	$s3, datalen		# Add 16 to s1, data limit.
+	lw	$s3, 0($s0)		# Add 16 to s1, data limit.
 	la	$s5, 0			# PrintLoop itterator
 	
-	
-	add	$s1, $0, $s0		# SortPosition-Array
-	add	$t7, $0, $s0		# Lowest value position.
+	lw 	$s1, 4($s0)		#Vet inte om det här funkar tbh
+	lw	$t7 , 4($s0)
+	#add	$s1, $0, $s0		# SortPosition-Array
+	#add	$t7, $0, $s0		# Lowest value position.
 
 	li	$s4, 0			# Numb of Y-loops.
 	li	$s2, 0			# iMin.
 	li	$s6, 0			# Numb of X-loops.
-	li	$t3, 0			#Loop for reading from a file
-	
-	
-	jal	readLoop
+	li	$t3, 0			# Loop for reading from a file
 
+	jal	xLoop
 
 readLoop:
 	
 	
 	#Open a file to read
 	li	$v0, 13			#Call to open a file
-	la	$a0, ($t4)		#Reads the user input file
+	la	$a0, directory		#Reads the user input file
 	li	$a1, 0 			#Open for reading
 	li	$a2, 0			#Might not be needed
 	syscall
@@ -91,14 +95,18 @@ readLoop:
 	#Time to read the file
 	li	$v0, 14			#Call to read a file
 	move	$a0 , $t1		#File descriptor
-	la	$a1, buffer		#A1 gets the adress of the buffer
-	li	$a2, 1024		#Hardcoded buffersize
+	la	$a1, ($s0)		#A1 gets the adress of the buffer
+	li	$a2, 68			#Hardcoded buffersize
 	syscall
+
 	
 	#Time to close it
 	li	$v0 , 16		#Call to close a file
 	move	$a0, $t1		#File descriptor to close
 	syscall
+	nop
+	jr	$ra
+	nop
 		
 xLoop:	
 	# If we have gone through 16 loops.				
@@ -170,7 +178,7 @@ SwitchValues:
 
 printLoop:
 
-	la	$s1, data	
+	la	$s1, buffer	
 	la	$a0, result
 	li	$v0, 4
 	syscall
